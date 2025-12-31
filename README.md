@@ -1,6 +1,31 @@
 # Arduino NINA-W102 firmware
 
-This firmware uses [Espressif's IDF](https://github.com/espressif/esp-idf)
+This is my custom fork using WIFI_ALL_CHANNEL_SCAN instead of WIFI_FAST_SCAN 
+
+## My custom Build instructions
+
+```bash
+git clone git@github.com:Bodobolero/nina-fw.git
+cd nina-fw
+docker run -v $PWD:/data espressif/idf:v3.3.1 -- sh -c 'cd /data && make'
+docker run -v $PWD:/data espressif/idf:v3.3.1 -- sh -c 'cd /data && RELEASE=1 NANO_RP2040_CONNECT=1 make'
+# create ./NINA_W102.bin
+python combine.py
+
+```
+
+## My custom Flash instructions
+
+```bash
+# https://arduino.github.io/arduino-fwuploader/2.2/usage/#firmware-flashing
+export DEVICE=/dev/cu.usbmodem1401
+
+# get current version first
+/Applications/Arduino\ IDE.app/Contents/Resources/app/lib/backend/resources/arduino-fwuploader firmware get-version -b arduino:mbed_nano:nanorp2040connect -a $DEVICE
+
+# flash
+/Applications/Arduino\ IDE.app/Contents/Resources/app/lib/backend/resources/arduino-fwuploader firmware flash -i NINA_W102.bin --fqbn arduino:mbed_nano:nanorp2040connect -a $DEVICE --retries 2
+```
 
 ## Building
 
@@ -27,7 +52,7 @@ docker run -v $PWD:/data espressif/idf:v3.3.1 -- sh -c 'cd /data && make'
 You can also flash the firmware with the following snippet:
 
 ```
-DEVICE=/dev/ttyACM0
+DEVICE=/dev/cu.usbmodem1401
 docker run --device=$DEVICE -v $PWD:/data espressif/idf:v3.3.1 -- sh -c 'cd /data && make flash ESPPORT=$DEVICE'
 ```
 
